@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hybrid Agent Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        [x-cloak] { display: none !important; }
+        .terminal-bg { background-color: #0d1117; }
+        .card-bg { background-color: #161b22; border: 1px solid #30363d; }
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 5px rgba(34, 197, 94, 0.5); }
+            50% { box-shadow: 0 0 20px rgba(34, 197, 94, 0.8); }
+        }
+        .status-online { animation: pulse-glow 2s infinite; }
+    </style>
+</head>
+<body class="bg-[#010409] text-[#c9d1d9] font-sans" x-data="dashboard()">
+    <!-- Sidebar -->
+    <div class="flex h-screen overflow-hidden">
+        <aside class="w-64 card-bg border-r border-[#30363d] flex-shrink-0 hidden md:flex flex-col">
+            <div class="p-6">
+                <h1 class="text-xl font-bold flex items-center gap-2 text-white">
+                    <i class="fas fa-robot text-blue-500"></i>
+                    Hybrid Agent
+                </h1>
+                <p class="text-xs text-gray-500 mt-1">v1.1.0 - Free AI Provider</p>
+            </div>
+            <nav class="flex-1 px-4 space-y-2 mt-4">
+                <a href="#" @click="tab = 'overview'" :class="tab === 'overview' ? 'bg-[#21262d] text-white' : 'text-gray-400 hover:text-white'" class="flex items-center gap-3 px-4 py-3 rounded-lg transition">
+                    <i class="fas fa-chart-line w-5"></i> Overview
+                </a>
+                <a href="#" @click="tab = 'providers'" :class="tab === 'providers' ? 'bg-[#21262d] text-white' : 'text-gray-400 hover:text-white'" class="flex items-center gap-3 px-4 py-3 rounded-lg transition">
+                    <i class="fas fa-server w-5"></i> Providers
+                </a>
+                <a href="#" @click="tab = 'sessions'" :class="tab === 'sessions' ? 'bg-[#21262d] text-white' : 'text-gray-400 hover:text-white'" class="flex items-center gap-3 px-4 py-3 rounded-lg transition">
+                    <i class="fas fa-history w-5"></i> Sessions
+                </a>
+                <a href="#" @click="tab = 'terminal'" :class="tab === 'terminal' ? 'bg-[#21262d] text-white' : 'text-gray-400 hover:text-white'" class="flex items-center gap-3 px-4 py-3 rounded-lg transition">
+                    <i class="fas fa-terminal w-5"></i> Terminal
+                </a>
+                <a href="#" @click="tab = 'docs'" :class="tab === 'docs' ? 'bg-[#21262d] text-white' : 'text-gray-400 hover:text-white'" class="flex items-center gap-3 px-4 py-3 rounded-lg transition">
+                    <i class="fas fa-book w-5"></i> API Docs
+                </a>
+            </nav>
+            <div class="p-4 border-t border-[#30363d]">
+                <div class="flex items-center gap-3 px-2 py-1">
+                    <div class="w-2 h-2 rounded-full status-online" :class="status === 'healthy' ? 'bg-green-500' : 'bg-red-500'"></div>
+                    <span class="text-xs font-medium uppercase tracking-wider" x-text="status"></span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 flex flex-col overflow-y-auto">
+            <!-- Header -->
+            <header class="h-16 card-bg border-b border-[#30363d] flex items-center justify-between px-8 sticky top-0 z-10">
+                <div class="flex items-center gap-4">
+                    <span class="text-sm font-medium text-gray-400">API Endpoint:</span>
+                    <code class="bg-[#21262d] px-3 py-1.5 rounded text-xs text-blue-400 font-mono">http://localhost:8001/v1</code>
+                    <button @click="copyEndpoint()" class="text-gray-500 hover:text-white transition">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
+                <div class="flex items-center gap-4 text-xs">
+                    <span class="text-gray-500">Uptime: <span class="text-green-400 font-mono" x-text="uptime"></span></span>
+                    <button @click="testAPI()" class="bg-blue-600 hover:bg-blue-700 px-3 py-1.5 rounded-md transition font-medium">
+                        <i class="fas fa-flask mr-1"></i> Test API
+                    </button>
+                </div>
+            </header>
+
+            <div class="p-8">
+                <!-- Overview Tab -->
+                <div x-show="tab === 'overview'" x-cloak class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                        <div class="card-bg p-6 rounded-xl">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-sm font-medium text-gray-500">Total Sessions</h3>
+                                <i class="fas fa-database text-blue-500"></i>
+                            </div>
+                            <p class="text-3xl font-bold mt-2" x-text="stats.total_sessions">0</p>
+                            <div class="mt-2 text-xs text-gray-500">All time</div>
+                        </div>
+                        <div class="card-bg p-6 rounded-xl">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-sm font-medium text-gray-500">Avg. Latency</h3>
+                                <i class="fas fa-bolt text-yellow-500"></i>
+                            </div>
+                            <p class="text-3xl font-bold mt-2" x-text="stats.avg_latency + 'ms'">0ms</p>
+                            <div class="mt-2 text-xs text-blue-500"><i class="fas fa-rocket"></i> BrowserPool Active</div>
+                        </div>
+                        <div class="card-bg p-6 rounded-xl">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-sm font-medium text-gray-500">Success Rate</h3>
+                                <i class="fas fa-check-circle text-green-500"></i>
+                            </div>
+                            <p class="text-3xl font-bold mt-2" x-text="stats.success_rate + '%'">0%</p>
+                            <div class="mt-2 text-xs text-gray-500">Last 100 requests</div>
+                        </div>
+                        <div class="card-bg p-6 rounded-xl">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-sm font-medium text-gray-500">Cost Saved</h3>
+                                <i class="fas fa-piggy-bank text-pink-500"></i>
+                            </div>
+                            <p class="text-3xl font-bold mt-2 text-green-400">$0.00</p>
+                            <div class="mt-2 text-xs text-green-500">100% Free Provider</div>
+                        </div>
+                    </div>
+
+                    <div class="card-bg rounded-xl overflow-hidden">
+                        <div class="p-4 border-b border-[#30363d] flex justify-between items-center bg-[#1c2128]">
+                            <h3 class="text-sm font-bold text-white uppercase tracking-widest">Recent Sessions</h3>
+                            <button @click="refreshStats()" class="text-xs text-blue-500 hover:underline">
+                                <i class="fas fa-rotate"></i> Refresh
+                            </button>
+                        </div>
+                        <div class="divide-y divide-[#30363d]">
+                            <template x-for="session in stats.recent_sessions" :key="session.id">
+                                <div class="p-4 flex items-center justify-between hover:bg-[#1c2128] transition cursor-pointer">
+                                    <div class="flex items-center gap-4">
+                                        <div class="w-8 h-8 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-500">
+                                            <i class="fas fa-message text-xs"></i>
+                                        </div>
+                                        <div>
+                                            <p class="text-sm font-medium text-white" x-text="session.request"></p>
+                                            <p class="text-xs text-gray-500" x-text="new Date(session.created_at).toLocaleString()"></p>
+                                        </div>
+                                    </div>
+                                    <span class="text-xs bg-green-500/10 text-green-500 px-2 py-1 rounded" x-text="session.status"></span>
+                                </div>
+                            </template>
+                            <div x-show="stats.recent_sessions.length === 0" class="p-8 text-center text-gray-500">
+                                <i class="fas fa-inbox text-4xl mb-2"></i>
+                                <p>No sessions yet. Send your first request!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Providers Tab -->
+                <div x-show="tab === 'providers'" x-cloak class="space-y-6">
+                    <div class="card-bg p-6 rounded-xl">
+                        <h2 class="text-lg font-bold mb-4 flex items-center gap-2">
+                            <i class="fas fa-plug text-blue-500"></i>
+                            OpenClaw Configuration
+                        </h2>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-400 mb-2">Gateway URL</label>
+                                <input type="text" x-model="config.openclaw_url" class="w-full bg-[#0d1117] border border-[#30363d] rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:outline-none font-mono text-sm">
+                                <p class="text-xs text-gray-500 mt-1">Default: http://localhost:18789/v1/chat/completions</p>
+                            </div>
+                            <div class="flex items-center justify-between p-4 bg-blue-500/5 border border-blue-500/20 rounded-lg">
+                                <div class="flex items-center gap-3">
+                                    <i class="fas fa-info-circle text-blue-500"></i>
+                                    <span class="text-sm text-blue-300">OpenClaw provides zero-token reasoning via Web UI gateway.</span>
+                                </div>
+                                <button @click="testOpenClaw()" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg text-sm font-bold transition">
+                                    <i class="fas fa-vial mr-1"></i> Test
+                                </button>
+                            </div>
+                            <button @click="saveConfig()" class="w-full bg-green-600 hover:bg-green-700 px-4 py-2.5 rounded-lg font-bold transition">
+                                <i class="fas fa-save mr-2"></i> Save Configuration
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="card-bg p-6 rounded-xl">
+                        <h2 class="text-lg font-bold mb-4 flex items-center gap-2">
+                            <i class="fas fa-wrench text-yellow-500"></i>
+                            Local Tools
+                        </h2>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="bg-[#0d1117] p-4 rounded-lg border border-[#30363d]">
+                                <i class="fas fa-terminal text-green-500 text-2xl mb-2"></i>
+                                <h3 class="font-bold text-white">Terminal</h3>
+                                <p class="text-xs text-gray-500 mt-1">Execute shell commands</p>
+                            </div>
+                            <div class="bg-[#0d1117] p-4 rounded-lg border border-[#30363d]">
+                                <i class="fas fa-file text-blue-500 text-2xl mb-2"></i>
+                                <h3 class="font-bold text-white">File I/O</h3>
+                                <p class="text-xs text-gray-500 mt-1">Read & write files</p>
+                            </div>
+                            <div class="bg-[#0d1117] p-4 rounded-lg border border-[#30363d]">
+                                <i class="fas fa-folder text-yellow-500 text-2xl mb-2"></i>
+                                <h3 class="font-bold text-white">Directory</h3>
+                                <p class="text-xs text-gray-500 mt-1">List directory contents</p>
+                            </div>
+                            <div class="bg-[#0d1117] p-4 rounded-lg border border-[#30363d] opacity-50">
+                                <i class="fas fa-plus text-gray-500 text-2xl mb-2"></i>
+                                <h3 class="font-bold text-gray-500">More Soon</h3>
+                                <p class="text-xs text-gray-600 mt-1">Coming in v2.0</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sessions Tab -->
+                <div x-show="tab === 'sessions'" x-cloak>
+                    <div class="card-bg rounded-xl overflow-hidden">
+                        <div class="p-4 border-b border-[#30363d] bg-[#1c2128]">
+                            <h3 class="text-sm font-bold text-white uppercase tracking-widest">All Sessions</h3>
+                        </div>
+                        <div class="p-6">
+                            <p class="text-gray-500 text-center py-8">Session history viewer coming soon...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Terminal Tab -->
+                <div x-show="tab === 'terminal'" x-cloak class="h-[calc(100vh-12rem)] flex flex-col">
+                    <div class="terminal-bg flex-1 p-6 rounded-xl font-mono text-sm overflow-y-auto border border-[#30363d] space-y-1" id="terminal-output">
+                        <div class="text-green-500">Hybrid Agent Terminal v1.1.0</div>
+                        <div class="text-gray-500">Type your request below and press Enter...</div>
+                        <div class="h-4"></div>
+                        <template x-for="line in terminalHistory">
+                            <div>
+                                <span class="text-blue-500">$</span>
+                                <span class="text-gray-300 ml-2" x-text="line.input"></span>
+                                <div class="text-green-400 ml-4 mt-1" x-text="line.output"></div>
+                            </div>
+                        </template>
+                    </div>
+                    <div class="mt-4 flex gap-2">
+                        <input 
+                            type="text" 
+                            x-model="terminalInput" 
+                            @keyup.enter="sendTerminalCommand()"
+                            placeholder="Enter your request..."
+                            class="flex-1 bg-[#0d1117] border border-[#30363d] rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:outline-none font-mono text-sm"
+                        >
+                        <button @click="sendTerminalCommand()" class="bg-blue-600 hover:bg-blue-700 px-6 py-2.5 rounded-lg font-bold transition">
+                            <i class="fas fa-paper-plane"></i> Send
+                        </button>
+                    </div>
+                </div>
+
+                <!-- API Docs Tab -->
+                <div x-show="tab === 'docs'" x-cloak class="space-y-6">
+                    <div class="card-bg p-6 rounded-xl">
+                        <h2 class="text-2xl font-bold mb-4">Quick Start Guide</h2>
+                        <div class="space-y-4 text-sm">
+                            <div>
+                                <h3 class="font-bold text-white mb-2">1. API Endpoint</h3>
+                                <code class="block bg-[#0d1117] p-3 rounded border border-[#30363d] font-mono text-xs">
+                                    POST http://localhost:8001/v1/chat/completions
+                                </code>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-white mb-2">2. Authentication</h3>
+                                <code class="block bg-[#0d1117] p-3 rounded border border-[#30363d] font-mono text-xs">
+                                    Authorization: Bearer hybrid-free-key-2026
+                                </code>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-white mb-2">3. Example Request</h3>
+                                <pre class="bg-[#0d1117] p-3 rounded border border-[#30363d] font-mono text-xs overflow-x-auto">curl -X POST http://localhost:8001/v1/chat/completions \
+  -H "Authorization: Bearer hybrid-free-key-2026" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "hybrid-agent",
+    "messages": [
+      {"role": "user", "content": "Hello, how are you?"}
+    ]
+  }'</pre>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-white mb-2">4. Use in Clawx/Hermes</h3>
+                                <div class="bg-blue-500/5 border border-blue-500/20 p-4 rounded-lg">
+                                    <p class="text-blue-300 mb-2">Add as custom provider:</p>
+                                    <ul class="space-y-1 text-xs text-gray-400">
+                                        <li>• Base URL: <code class="text-blue-400">http://localhost:8001/v1</code></li>
+                                        <li>• API Key: <code class="text-blue-400">hybrid-free-key-2026</code></li>
+                                        <li>• Model: <code class="text-blue-400">hybrid-agent</code></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function dashboard() {
+            return {
+                tab: 'overview',
+                status: 'healthy',
+                uptime: '00:00:00',
+                stats: {
+                    total_sessions: 0,
+                    recent_sessions: [],
+                    avg_latency: 0,
+                    success_rate: 0
+                },
+                config: {
+                    openclaw_url: 'http://localhost:18789/v1/chat/completions'
+                },
+                terminalInput: '',
+                terminalHistory: [],
+                
+                async init() {
+                    // Update uptime
+                    let startTime = Date.now();
+                    setInterval(() => {
+                        let diff = Math.floor((Date.now() - startTime) / 1000);
+                        let h = Math.floor(diff / 3600).toString().padStart(2, '0');
+                        let m = Math.floor((diff % 3600) / 60).toString().padStart(2, '0');
+                        let s = (diff % 60).toString().padStart(2, '0');
+                        this.uptime = `${h}:${m}:${s}`;
+                    }, 1000);
+
+                    // Load initial data
+                    await this.refreshStats();
+                    await this.loadConfig();
+                },
+
+                async refreshStats() {
+                    try {
+                        const response = await fetch('/api/stats');
+                        this.stats = await response.json();
+                    } catch (e) {
+                        console.error('Failed to load stats:', e);
+                    }
+                },
+
+                async loadConfig() {
+                    try {
+                        const response = await fetch('/api/config');
+                        const data = await response.json();
+                        this.config.openclaw_url = data.openclaw_url;
+                    } catch (e) {
+                        console.error('Failed to load config:', e);
+                    }
+                },
+
+                async saveConfig() {
+                    try {
+                        await fetch('/api/config', {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify(this.config)
+                        });
+                        alert('✅ Configuration saved successfully!');
+                    } catch (e) {
+                        alert('❌ Failed to save configuration');
+                    }
+                },
+
+                async testAPI() {
+                    try {
+                        const response = await fetch('/v1/chat/completions', {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': 'Bearer hybrid-free-key-2026',
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                model: 'hybrid-agent',
+                                messages: [{role: 'user', content: 'Test connection'}]
+                            })
+                        });
+                        const data = await response.json();
+                        alert('✅ API Test Successful!\n\nResponse: ' + data.choices[0].message.content.substring(0, 100));
+                    } catch (e) {
+                        alert('❌ API Test Failed: ' + e.message);
+                    }
+                },
+
+                async testOpenClaw() {
+                    alert('Testing OpenClaw connection...\n\nNote: Make sure OpenClaw is running on the configured URL.');
+                },
+
+                copyEndpoint() {
+                    navigator.clipboard.writeText('http://localhost:8001/v1');
+                    alert('✅ Endpoint copied to clipboard!');
+                },
+
+                async sendTerminalCommand() {
+                    if (!this.terminalInput.trim()) return;
+                    
+                    const input = this.terminalInput;
+                    this.terminalInput = '';
+                    
+                    this.terminalHistory.push({
+                        input: input,
+                        output: 'Processing...'
+                    });
+
+                    try {
+                        const response = await fetch('/v1/chat/completions', {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': 'Bearer hybrid-free-key-2026',
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                model: 'hybrid-agent',
+                                messages: [{role: 'user', content: input}]
+                            })
+                        });
+                        const data = await response.json();
+                        this.terminalHistory[this.terminalHistory.length - 1].output = 
+                            data.choices[0].message.content;
+                    } catch (e) {
+                        this.terminalHistory[this.terminalHistory.length - 1].output = 
+                            'Error: ' + e.message;
+                    }
+
+                    // Auto scroll
+                    setTimeout(() => {
+                        const container = document.getElementById('terminal-output');
+                        container.scrollTop = container.scrollHeight;
+                    }, 100);
+                }
+            }
+        }
+    </script>
+</body>
+</html>
