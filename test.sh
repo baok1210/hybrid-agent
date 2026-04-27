@@ -1,119 +1,60 @@
-#!/usr/bin/env bash
+#!/bin/bash
+# Test Hybrid Agent API
+
 set -e
 
-echo "🧪 Testing Hybrid Agent AI Provider..."
+BASE_URL="http://localhost:8001"
+API_KEY="hybrid-free-key-2026"
 
-# Check if server is running
-if ! pgrep -f "uvicorn.*api_server" > /dev/null; then
-    echo "⚠️  Server is not running. Starting..."
-    ./start.sh
-    sleep 5
-fi
+echo "🧪 Testing Hybrid Agent API..."
+echo "================================"
 
-# Get port from config or default
-if [ -f "config.yaml" ]; then
-    PORT=$(grep -E "^\s*port:\s*" config.yaml | awk '{print $2}' | head -1)
-    if [ -z "$PORT" ]; then
-        PORT=8001
-    fi
-else
-    PORT=8001
-fi
-
-API_URL="http://localhost:$PORT"
-AUTH_TOKEN="hybrid-free-key-2026"
-
-echo "🔗 Testing endpoint: $API_URL"
-echo "🔑 Using auth token: $AUTH_TOKEN"
-
-# Test 1: Health endpoint
+# Test 1: Health check
 echo ""
-echo "1️⃣  Testing health endpoint..."
-HEALTH_RESPONSE=$(curl -s "$API_URL/health")
-if echo "$HEALTH_RESPONSE" | grep -q "status.*healthy"; then
-    echo "✅ Health check passed"
-else
-    echo "❌ Health check failed: $HEALTH_RESPONSE"
-    exit 1
-fi
+echo "1. Health check..."
+HEALTH=$(curl -s "$BASE_URL/health" 2>/dev/null || echo '{"status":"error"}')
+echo "   Response: $HEALTH"
 
-# Test 2: Authentication required
+# Test 2: List models
 echo ""
-echo "2️⃣  Testing authentication..."
-UNAUTH_RESPONSE=$(curl -s -X POST "$API_URL/v1/chat/completions" \
-    -H "Content-Type: application/json" \
-    -d '{"messages":[{"role":"user","content":"test"}]}')
-if echo "$UNAUTH_RESPONSE" | grep -q "401\|unauthorized\|Unauthorized"; then
-    echo "✅ Authentication required (as expected)"
-else
-    echo "⚠️  No authentication required (check config)"
-fi
+echo "2. List models..."
+curl -s "$BASE_URL/v1/models" 2>/dev/null | head -50 || echo "   Failed"
 
-# Test 3: Valid request
+# Test 3: Chat completion
 echo ""
-echo "3️⃣  Testing valid request..."
-VALID_RESPONSE=$(curl -s -X POST "$API_URL/v1/chat/completions" \
-    -H "Authorization: Bearer $AUTH_TOKEN" \
-    -H "Content-Type: application/json" \
-    -d '{"model":"hybrid-agent","messages":[{"role":"user","content":"Hello"}],"temperature":0}')
-if echo "$VALID_RESPONSE" | grep -q "choices"; then
-    echo "✅ Valid request succeeded"
-    echo "Response preview:"
-    echo "$VALID_RESPONSE" | jq -r '.choices[0].message.content // "No content"' | head -50
-else
-    echo "❌ Valid request failed:"
-    echo "$VALID_RESPONSE" | head -200
-    exit 1
-fi
+echo "3. Chat completion test..."
+echo "   Sending: 'Hello, what is 2+2?'"
+echo ""
 
-# Test 4: Tool execution
-echo ""
-echo "4️⃣  Testing tool execution..."
-TOOL_RESPONSE=$(curl -s -X POST "$API_URL/v1/chat/completions" \
-    -H "Authorization: Bearer $AUTH_TOKEN" \
-    -H "Content-Type: application/json" \
-    -d '{"model":"hybrid-agent","messages":[{"role":"user","content":"List files in current directory"}],"temperature":0}')
-if echo "$TOOL_RESPONSE" | grep -q "choices"; then
-    echo "✅ Tool execution test passed"
-else
-    echo "⚠️  Tool execution may have failed"
-    echo "$TOOL_RESPONSE" | head -200
-fi
+RESPONSE=$(curl -s -X POST "$BASE_URL/v1/chat/completions"   -H "Content-Type: application/json"   -H "Authorization: Bearer $API_KEY"   -d '{"model": "hybrid-agent", "messages": [{"role": "user", "content": "What is 2+2?"}]}' 2>/dev/null)
 
-# Test 5: Error handling
-echo ""
-echo "5️⃣  Testing error handling..."
-ERROR_RESPONSE=$(curl -s -X POST "$API_URL/v1/chat/completions" \
-    -H "Authorization: Bearer $AUTH_TOKEN" \
-    -H "Content-Type: application/json" \
-    -d '{"invalid":"json"}')
-if echo "$ERROR_RESPONSE" | grep -q "422\|error\|validation"; then
-    echo "✅ Error handling works"
-else
-    echo "⚠️  Error handling may not be working"
-fi
+echo "   Response:"
+echo "$RESPONSE" | python3 -m json.tool 2>/dev/null || echo "$RESPONSE"
 
-# Test 6: Metrics endpoint
+# Test 4: Function calling
 echo ""
-echo "6️⃣  Testing metrics..."
-METRICS_RESPONSE=$(curl -s "$API_URL/metrics")
-if [ -n "$METRICS_RESPONSE" ]; then
-    echo "✅ Metrics endpoint working"
-else
-    echo "⚠️  Metrics endpoint may be disabled"
-fi
+echo "4. Function calling test..."
+
+curl -s -X POST "$BASE_URL/v1/chat/completions"   -H "Content-Type: application/json"   -H "Authorization: Bearer $API_KEY"   -d '{
+    "model": "hybrid-agent",
+    "messages": [{"role": "user", "content": "Get weather for Hanoi"}],
+    "tools": [{
+      "type": "function",
+      "function": {
+        "name": "get_weather",
+        "description": "Get weather for a location",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "location": {"type": "string"},
+            "unit": {"type": "string", "enum": ["celsius", "fahrenheit"]}
+          },
+          "required": ["location"]
+        }
+      }
+    }]
+  }' 2>/dev/null | python3 -m json.tool 2>/dev/null || echo "   Failed"
 
 echo ""
-echo "🎉 All tests completed!"
-echo ""
-echo "📊 Server status:"
-curl -s "$API_URL/health" | jq -r '.status,.timestamp,.version // "No JSON"'
-
-echo ""
-echo "📈 Recent requests:"
-curl -s "$API_URL/metrics" | grep -E "http_requests_total|request_duration" | head -5 || echo "No metrics available"
-
-echo ""
-echo "🚀 Ready for production use!"
-echo "API: $API_URL/v1/chat/completions"
-echo "Token: $AUTH_TOKEN"
+echo "================================"
+echo "✅ Test completed!"

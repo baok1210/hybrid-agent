@@ -1,0 +1,20 @@
+2026-04-27 04:21:28,431 - __main__ - ERROR - Failed to connect to CDP: BrowserType.connect_over_cdp() got an unexpected keyword argument 'ws_endpoint'
+2026-04-27 04:21:28,431 - __main__ - WARNING - Could not connect to Chrome via CDP - server will retry on first request
+2026-04-27 04:25:42,256 - __main__ - INFO - [5a267dd8] Processing 1 messages
+2026-04-27 04:25:42,257 - __main__ - INFO - [5a267dd8] Reconnecting to browser...
+2026-04-27 04:25:42,514 - __main__ - ERROR - Failed to connect to CDP: BrowserType.connect_over_cdp() got an unexpected keyword argument 'ws_endpoint'
+2026-04-27 04:25:42,515 - __main__ - ERROR - [5a267dd8] Error: 503: Cannot connect to Chrome via CDP. Is Chrome running with --remote-debugging-port=9222?
+2026-04-27 04:25:42,577 - __main__ - INFO - [90220c76] Processing 1 messages
+2026-04-27 04:25:42,578 - __main__ - INFO - [90220c76] Added function calling for 1 tools
+2026-04-27 04:25:42,578 - __main__ - INFO - [90220c76] Reconnecting to browser...
+2026-04-27 04:25:42,824 - __main__ - ERROR - Failed to connect to CDP: BrowserType.connect_over_cdp() got an unexpected keyword argument 'ws_endpoint'
+2026-04-27 04:25:42,824 - __main__ - ERROR - [90220c76] Error: 503: Cannot connect to Chrome via CDP. Is Chrome running with --remote-debugging-port=9222?
+2026-04-27 04:29:32,411 - __main__ - INFO - [7b40af24] Processing 1 messages
+2026-04-27 04:29:32,412 - __main__ - INFO - [7b40af24] Reconnecting to browser...
+2026-04-27 04:29:32,664 - __main__ - ERROR - Failed to connect to CDP: BrowserType.connect_over_cdp() got an unexpected keyword argument 'ws_endpoint'
+2026-04-27 04:29:32,664 - __main__ - ERROR - [7b40af24] Error: 503: Cannot connect to Chrome via CDP. Is Chrome running with --remote-debugging-port=9222?
+2026-04-27 04:29:32,712 - __main__ - INFO - [ef0073c8] Processing 1 messages
+2026-04-27 04:29:32,712 - __main__ - INFO - [ef0073c8] Added function calling for 1 tools
+2026-04-27 04:29:32,712 - __main__ - INFO - [ef0073c8] Reconnecting to browser...
+2026-04-27 04:29:32,962 - __main__ - ERROR - Failed to connect to CDP: BrowserType.connect_over_cdp() got an unexpected keyword argument 'ws_endpoint'
+2026-04-27 04:29:32,963 - __main__ - ERROR - [ef0073c8] Error: 503: Cannot connect to Chrome via CDP. Is Chrome running with --remote-debugging-port=9222?

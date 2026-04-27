@@ -1,24 +1,22 @@
-#!/usr/bin/env bash
-echo "🛑 Stopping Hybrid Agent AI Provider..."
+#!/bin/bash
+# Stop Hybrid Agent Server
 
-# Find PID of uvicorn process running api_server
-PID=$(pgrep -f "uvicorn.*api_server")
+echo "🛑 Stopping Hybrid Agent..."
 
-if [ -z "$PID" ]; then
-    echo "⚠️  Server is not running."
+# Find and kill the server process
+PIDS=$(ps aux | grep "python api_server.py" | grep -v grep | awk '{print $2}')
+
+if [ -z "$PIDS" ]; then
+    echo "⚠️  Hybrid Agent is not running"
 else
-    echo "🔪 Killing process $PID..."
-    kill $PID
-    sleep 2
-    # Double check and force kill if necessary
-    if pgrep -f "uvicorn.*api_server" > /dev/null; then
-        echo "⚠️  Server didn't stop, forcing kill..."
-        pkill -9 -f "uvicorn.*api_server"
-    fi
-    echo "✅ Server stopped."
+    echo "🔪 Killing process(es): $PIDS"
+    echo $PIDS | xargs kill -9 2>/dev/null || true
+    echo "✅ Hybrid Agent stopped"
 fi
 
-# Clean up PID file if exists
-if [ -f ".server.pid" ]; then
-    rm .server.pid
+# Also kill uvicorn
+UVICORN_PIDS=$(ps aux | grep "uvicorn" | grep -v grep | awk '{print $2}')
+if [ ! -z "$UVICORN_PIDS" ]; then
+    echo "🔪 Killing uvicorn: $UVICORN_PIDS"
+    echo $UVICORN_PIDS | xargs kill -9 2>/dev/null || true
 fi

@@ -5,21 +5,20 @@ WORKDIR /app
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
     curl \
-    git \
+    chromium \
+    chromium-driver \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements and install
+# Copy requirements first for better caching
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy project files
+# Copy application code
 COPY . .
 
-# Create directories for logs and state
-RUN mkdir -p logs data && chmod -R 777 logs data
+# Create logs directory
+RUN mkdir -p logs
 
-# Expose port
 EXPOSE 8001
 
-# Run the server
-CMD ["python", "-m", "uvicorn", "hybrid-agent.api_server:app", "--host", "0.0.0.0", "--port", "8001"]
+CMD ["python", "api_server.py"]

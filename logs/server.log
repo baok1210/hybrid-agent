@@ -1,18 +1,102 @@
-INFO:     Will watch for changes in these directories: ['/home/bun/hybrid-agent']
-INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
-INFO:     Started reloader process [1542645] using WatchFiles
-INFO:     Started server process [1542656]
+INFO:     Started server process [1709399]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
-INFO:     127.0.0.1:40208 - "GET /health HTTP/1.1" 200 OK
-INFO:     127.0.0.1:56632 - "GET /health HTTP/1.1" 200 OK
-WARNING:  WatchFiles detected changes in 'installer_gui.py'. Reloading...
+INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
+INFO:     127.0.0.1:52432 - "GET /health HTTP/1.1" 200 OK
+2026-04-27 08:37:09,635 - WARNING - CAPTCHA keyword detected: verify
+2026-04-27 08:37:09,635 - INFO - Starting CAPTCHA handling flow...
+2026-04-27 08:37:09,656 - WARNING - CAPTCHA keyword detected: verify
+2026-04-27 08:37:09,656 - WARNING - ⚠️  CAPTCHA DETECTED!
+2026-04-27 08:37:09,656 - WARNING - Please solve the CAPTCHA manually in the browser.
+2026-04-27 08:37:09,656 - WARNING - The system will wait for you to complete it.
+2026-04-27 08:37:09,656 - INFO - Waiting 30.0s for CAPTCHA solution...
+2026-04-27 08:37:09,684 - WARNING - CAPTCHA keyword detected: verify
+2026-04-27 08:37:11,706 - WARNING - CAPTCHA keyword detected: verify
+2026-04-27 08:37:13,731 - WARNING - CAPTCHA keyword detected: verify
+2026-04-27 08:37:15,753 - WARNING - CAPTCHA keyword detected: verify
+2026-04-27 08:37:17,894 - WARNING - CAPTCHA keyword detected: verify
+2026-04-27 08:37:19,915 - WARNING - CAPTCHA keyword detected: verify
+2026-04-27 08:37:21,941 - WARNING - CAPTCHA keyword detected: verify
+2026-04-27 08:37:23,962 - WARNING - CAPTCHA keyword detected: verify
+2026-04-27 08:37:25,985 - WARNING - CAPTCHA keyword detected: verify
+2026-04-27 08:37:28,013 - WARNING - CAPTCHA keyword detected: verify
+2026-04-27 08:37:30,040 - WARNING - CAPTCHA keyword detected: verify
+2026-04-27 08:37:32,063 - WARNING - CAPTCHA keyword detected: verify
+2026-04-27 08:37:34,088 - WARNING - CAPTCHA keyword detected: verify
+2026-04-27 08:37:36,115 - WARNING - CAPTCHA keyword detected: verify
+2026-04-27 08:37:38,139 - WARNING - CAPTCHA keyword detected: verify
+2026-04-27 08:37:40,139 - WARNING - CAPTCHA timeout - user may need to solve manually
+2026-04-27 08:37:40,140 - ERROR - CAPTCHA not solved within timeout
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/home/bun/hybrid-agent/venv/lib/python3.11/site-packages/uvicorn/protocols/http/h11_impl.py", line 412, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/bun/hybrid-agent/venv/lib/python3.11/site-packages/uvicorn/middleware/proxy_headers.py", line 84, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/bun/hybrid-agent/venv/lib/python3.11/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/home/bun/hybrid-agent/venv/lib/python3.11/site-packages/starlette/applications.py", line 123, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/bun/hybrid-agent/venv/lib/python3.11/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/home/bun/hybrid-agent/venv/lib/python3.11/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/home/bun/hybrid-agent/venv/lib/python3.11/site-packages/starlette/middleware/exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/home/bun/hybrid-agent/venv/lib/python3.11/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/bun/hybrid-agent/venv/lib/python3.11/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/bun/hybrid-agent/venv/lib/python3.11/site-packages/starlette/routing.py", line 758, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/bun/hybrid-agent/venv/lib/python3.11/site-packages/starlette/routing.py", line 778, in app
+    await route.handle(scope, receive, send)
+  File "/home/bun/hybrid-agent/venv/lib/python3.11/site-packages/starlette/routing.py", line 299, in handle
+    await self.app(scope, receive, send)
+  File "/home/bun/hybrid-agent/venv/lib/python3.11/site-packages/starlette/routing.py", line 79, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/home/bun/hybrid-agent/venv/lib/python3.11/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/home/bun/hybrid-agent/venv/lib/python3.11/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/bun/hybrid-agent/venv/lib/python3.11/site-packages/starlette/routing.py", line 74, in app
+    response = await func(request)
+               ^^^^^^^^^^^^^^^^^^^
+  File "/home/bun/hybrid-agent/venv/lib/python3.11/site-packages/fastapi/routing.py", line 299, in app
+    raise e
+  File "/home/bun/hybrid-agent/venv/lib/python3.11/site-packages/fastapi/routing.py", line 294, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/bun/hybrid-agent/venv/lib/python3.11/site-packages/fastapi/routing.py", line 191, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/bun/hybrid-agent/api_server.py", line 129, in chat
+    await browser_automation.send_human(prompt, tconf)
+  File "/home/bun/hybrid-agent/api_server.py", line 91, in send_human
+    await human_typer.type_like_human(page, target_config["input_selector"], message)
+  File "/home/bun/hybrid-agent/human_typer.py", line 10, in type_like_human
+    await page.click(selector)
+  File "/home/bun/hybrid-agent/venv/lib/python3.11/site-packages/playwright/async_api/_generated.py", line 9631, in click
+    await self._impl_obj.click(
+  File "/home/bun/hybrid-agent/venv/lib/python3.11/site-packages/playwright/_impl/_page.py", line 777, in click
+    return await self._main_frame.click(**locals_to_params(locals()))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/bun/hybrid-agent/venv/lib/python3.11/site-packages/playwright/_impl/_frame.py", line 488, in click
+    await self._channel.send("click", locals_to_params(locals()))
+  File "/home/bun/hybrid-agent/venv/lib/python3.11/site-packages/playwright/_impl/_connection.py", line 59, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/bun/hybrid-agent/venv/lib/python3.11/site-packages/playwright/_impl/_connection.py", line 514, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TimeoutError: Page.click: Timeout 30000ms exceeded.
+Call log:
+waiting for locator("textarea#prompt-textarea")
+
+INFO:     127.0.0.1:38890 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55518 - "GET /health HTTP/1.1" 200 OK
 INFO:     Shutting down
 INFO:     Waiting for application shutdown.
 INFO:     Application shutdown complete.
-INFO:     Finished server process [1542656]
-INFO:     Started server process [1547029]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-INFO:     127.0.0.1:51444 - "GET /health HTTP/1.1" 200 OK
-INFO:     127.0.0.1:36532 - "GET /health HTTP/1.1" 200 OK
+INFO:     Finished server process [1709399]

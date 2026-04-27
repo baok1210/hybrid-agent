@@ -1,0 +1,68 @@
+🔍 Checking Chrome CDP connection...
+⚠️  Chrome not detected on port 9222
+
+To start Chrome with remote debugging:
+google-chrome --remote-debugging-port=9222 --user-data-dir=/tmp/chrome-debug
+
+Or in background:
+nohup google-chrome --remote-debugging-port=9222 --user-data-dir=/tmp/chrome-debug > /dev/null 2>&1 &
+
+🚀 Starting Hybrid Agent API Gateway...
+📡 API: http://localhost:8001/v1/chat/completions
+🏥 Health: http://localhost:8001/health
+📊 Models: http://localhost:8001/v1/models
+
+Press Ctrl+C to stop
+
+/home/bun/hybrid-agent/api_server.py:206: DeprecationWarning: 
+        on_event is deprecated, use lifespan event handlers instead.
+
+        Read more about it in the
+        [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+        
+  @app.on_event("startup")
+/home/bun/hybrid-agent/api_server.py:219: DeprecationWarning: 
+        on_event is deprecated, use lifespan event handlers instead.
+
+        Read more about it in the
+        [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+        
+  @app.on_event("shutdown")
+INFO:     Started server process [1571813]
+INFO:     Waiting for application startup.
+2026-04-27 04:21:28,431 - __main__ - ERROR - Failed to connect to CDP: BrowserType.connect_over_cdp() got an unexpected keyword argument 'ws_endpoint'
+2026-04-27 04:21:28,431 - __main__ - WARNING - Could not connect to Chrome via CDP - server will retry on first request
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
+INFO:     127.0.0.1:40770 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40772 - "GET /v1/models HTTP/1.1" 200 OK
+2026-04-27 04:25:42,256 - __main__ - INFO - [5a267dd8] Processing 1 messages
+2026-04-27 04:25:42,257 - __main__ - INFO - [5a267dd8] Reconnecting to browser...
+2026-04-27 04:25:42,514 - __main__ - ERROR - Failed to connect to CDP: BrowserType.connect_over_cdp() got an unexpected keyword argument 'ws_endpoint'
+2026-04-27 04:25:42,515 - __main__ - ERROR - [5a267dd8] Error: 503: Cannot connect to Chrome via CDP. Is Chrome running with --remote-debugging-port=9222?
+INFO:     127.0.0.1:40778 - "POST /v1/chat/completions HTTP/1.1" 500 Internal Server Error
+2026-04-27 04:25:42,577 - __main__ - INFO - [90220c76] Processing 1 messages
+2026-04-27 04:25:42,578 - __main__ - INFO - [90220c76] Added function calling for 1 tools
+2026-04-27 04:25:42,578 - __main__ - INFO - [90220c76] Reconnecting to browser...
+2026-04-27 04:25:42,824 - __main__ - ERROR - Failed to connect to CDP: BrowserType.connect_over_cdp() got an unexpected keyword argument 'ws_endpoint'
+2026-04-27 04:25:42,824 - __main__ - ERROR - [90220c76] Error: 503: Cannot connect to Chrome via CDP. Is Chrome running with --remote-debugging-port=9222?
+INFO:     127.0.0.1:40788 - "POST /v1/chat/completions HTTP/1.1" 500 Internal Server Error
+INFO:     127.0.0.1:47366 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47380 - "GET /v1/models HTTP/1.1" 200 OK
+2026-04-27 04:29:32,411 - __main__ - INFO - [7b40af24] Processing 1 messages
+2026-04-27 04:29:32,412 - __main__ - INFO - [7b40af24] Reconnecting to browser...
+2026-04-27 04:29:32,664 - __main__ - ERROR - Failed to connect to CDP: BrowserType.connect_over_cdp() got an unexpected keyword argument 'ws_endpoint'
+2026-04-27 04:29:32,664 - __main__ - ERROR - [7b40af24] Error: 503: Cannot connect to Chrome via CDP. Is Chrome running with --remote-debugging-port=9222?
+INFO:     127.0.0.1:47384 - "POST /v1/chat/completions HTTP/1.1" 500 Internal Server Error
+2026-04-27 04:29:32,712 - __main__ - INFO - [ef0073c8] Processing 1 messages
+2026-04-27 04:29:32,712 - __main__ - INFO - [ef0073c8] Added function calling for 1 tools
+2026-04-27 04:29:32,712 - __main__ - INFO - [ef0073c8] Reconnecting to browser...
+2026-04-27 04:29:32,962 - __main__ - ERROR - Failed to connect to CDP: BrowserType.connect_over_cdp() got an unexpected keyword argument 'ws_endpoint'
+2026-04-27 04:29:32,963 - __main__ - ERROR - [ef0073c8] Error: 503: Cannot connect to Chrome via CDP. Is Chrome running with --remote-debugging-port=9222?
+INFO:     127.0.0.1:47386 - "POST /v1/chat/completions HTTP/1.1" 500 Internal Server Error
+INFO:     127.0.0.1:49748 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40994 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59458 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54180 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45036 - "GET /health HTTP/1.1" 200 OK
+start.sh: line 33: 1571813 Killed                     python api_server.py

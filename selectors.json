@@ -1,0 +1,32 @@
+{
+  "chatgpt": {
+    "name": "ChatGPT (Latest)",
+    "url_pattern": "https://chatgpt.com",
+    "input_selector": "textarea#prompt-textarea",
+    "submit_selector": "button[data-testid='send-button']",
+    "response_container": "div[data-message-author-role='assistant'] .markdown",
+    "stop_generating_selector": "button[aria-label='Stop generating']",
+    "captcha_detector": "iframe[src*='recaptcha'], div[class*='captcha']",
+    "captcha_wait_ms": 30000
+  },
+  "gemini": {
+    "name": "Google Gemini (Latest)",
+    "url_pattern": "https://gemini.google.com",
+    "input_selector": "div[contenteditable='true'][role='textbox'], textarea[aria-label*='Message']",
+    "submit_selector": "button[aria-label='Send message'], button[data-tooltip='Send message']",
+    "response_container": "div[data-message-author-role='assistant'], div[class*='response-container']",
+    "stop_generating_selector": "button[aria-label='Stop'], button[class*='stop-button']",
+    "captcha_detector": "iframe[src*='recaptcha'], div[class*='captcha']",
+    "captcha_wait_ms": 30000
+  },
+  "claude": {
+    "name": "Claude (Latest)",
+    "url_pattern": "https://claude.ai",
+    "input_selector": "div[contenteditable='true'][role='textbox'], textarea[placeholder*='Message']",
+    "submit_selector": "button[aria-label='Send'], button[class*='send-button']",
+    "response_container": "div[class*='Message__Content'], div[class*='message-content']",
+    "stop_generating_selector": "button[aria-label='Stop'], button[class*='stop-button']",
+    "captcha_detector": "iframe[src*='recaptcha'], div[class*='captcha']",
+    "captcha_wait_ms": 30000
+  }
+}
